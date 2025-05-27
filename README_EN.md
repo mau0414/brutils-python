@@ -640,8 +640,6 @@ It may include the country code, symbols (e.g., +, -, or spaces), or be just the
 
 Returns:
 
-- str: A randomly generated valid phone number.
-
 - "state" (str): The name of the Brazilian state.
 
 - "region" (str, optional): The region within the state, if applicable.
