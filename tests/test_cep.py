@@ -25,18 +25,30 @@ class TestCEP(TestCase):
         self.assertEqual(remove_symbols("...---..."), "")
 
     def test_is_valid(self):
-        # When CEP is not string, returns False
-        self.assertIs(is_valid(1), False)
 
-        # When CEP's len is different of 8, returns False
-        self.assertIs(is_valid("1"), False)
-
-        # When CEP does not contain only digits, returns False
-        self.assertIs(is_valid("1234567-"), False)
-
-        # When CEP is valid
-        self.assertIs(is_valid("99999999"), True)
-        self.assertIs(is_valid("88390000"), True)
+        # Invalid types (when CEP is not string, returns False)
+        self.assertFalse(is_valid(1))  # Number
+        self.assertFalse(is_valid(None))  # None
+        self.assertFalse(is_valid([]))  # Array
+        
+        # Invalid lengths (when CEP's len is different of 8, returns False)
+        self.assertFalse(is_valid(""))  # Empty
+        self.assertFalse(is_valid("1"))  # Lower boundary 
+        self.assertFalse(is_valid("1234567"))  # Below boundary (7 digits)
+        self.assertFalse(is_valid("123456789"))  # Above boundary (9 digits)
+        self.assertFalse(is_valid("1234567890"))  
+        
+        # Invalid characters (when CEP does not contain only digits, returns False)
+        self.assertFalse(is_valid("1234-678"))  # Hyphen
+        self.assertFalse(is_valid("1234 5678"))  # Space
+        self.assertFalse(is_valid("1234A678"))  # Letter
+        self.assertFalse(is_valid("1234.6789"))  # Dot
+        
+        # Valid CEPs
+        self.assertTrue(is_valid("00000000"))  
+        self.assertTrue(is_valid("99999999"))  
+        self.assertTrue(is_valid("12345678"))  
+        self.assertTrue(is_valid("18052780"))  # Real CEP
 
     def test_generate(self):
         for _ in range(10_000):

@@ -22,42 +22,38 @@ class TestNum2Words(TestCase):
 
 
 class TestDate(TestCase):
-    def test_convert_date_to_text(self):
-        self.assertEqual(
-            convert_date_to_text("15/08/2024"),
-            "Quinze de agosto de dois mil e vinte e quatro",
-        )
-        self.assertEqual(
-            convert_date_to_text("01/01/2000"),
-            "Primeiro de janeiro de dois mil",
-        )
-        self.assertEqual(
-            convert_date_to_text("31/12/1999"),
-            "Trinta e um de dezembro de mil novecentos e noventa e nove",
-        )
+    # Valid and right format dates 
+    def test_valid_dates_conversion(self):
+        self.assertEqual(convert_date_to_text("15/08/2024"),"Quinze de agosto de dois mil e vinte e quatro")
+        self.assertEqual(convert_date_to_text("01/01/2000"),"Primeiro de janeiro de dois mil") # First day of the year
+        self.assertEqual(convert_date_to_text("31/12/1999"),"Trinta e um de dezembro de mil novecentos e noventa e nove") # Last day of the year
+        self.assertEqual(convert_date_to_text("29/02/2020"),"Vinte e nove de fevereiro de dois mil e vinte") # Leap year
+        self.assertEqual(convert_date_to_text("01/03/2025"),"Primeiro de marco de dois mil e vinte e cinco") # First day of the month
 
-        #
-        self.assertIsNone(convert_date_to_text("30/02/2020"), None)
-        self.assertIsNone(convert_date_to_text("30/00/2020"), None)
-        self.assertIsNone(convert_date_to_text("30/02/2000"), None)
-        self.assertIsNone(convert_date_to_text("50/09/2000"), None)
-        self.assertIsNone(convert_date_to_text("25/15/2000"), None)
-        self.assertIsNone(convert_date_to_text("29/02/2019"), None)
+    # Nonexistent dates
+    def test_nonexistent_dates(self):
+        self.assertIsNone(convert_date_to_text("31/04/2025"))  #April has 30 days
+        self.assertIsNone(convert_date_to_text("29/02/2025"))  # Non-leap year
+        
+    # Invalid day numbers
+    def test_invalid_day_numbers(self):
+        self.assertIsNone(convert_date_to_text("00/01/2025"))
+        self.assertIsNone(convert_date_to_text("32/01/2025"))
+   
+    # Invalid month/day numbers
+    def test_invalid_month_numbers(self):
+        self.assertIsNone(convert_date_to_text("15/00/2025"))
+        self.assertIsNone(convert_date_to_text("15/13/2025"))
 
-        # Invalid date pattern.
+    # Valid alternative formats
+    def test_invalid_formats(self):
         self.assertRaises(ValueError, convert_date_to_text, "Invalid")
-        self.assertRaises(ValueError, convert_date_to_text, "25/1/2020")
-        self.assertRaises(ValueError, convert_date_to_text, "1924/08/20")
-        self.assertRaises(ValueError, convert_date_to_text, "5/09/2020")
-
-        self.assertEqual(
-            convert_date_to_text("29/02/2020"),
-            "Vinte e nove de fevereiro de dois mil e vinte",
-        )
-        self.assertEqual(
-            convert_date_to_text("01/01/1900"),
-            "Primeiro de janeiro de mil e novecentos",
-        )
+        self.assertRaises(ValueError, convert_date_to_text, "15-08-2025")  
+        self.assertRaises(ValueError, convert_date_to_text, "15.08.2025")  
+        self.assertRaises(ValueError, convert_date_to_text, "2025-01-22")  
+        self.assertRaises(ValueError, convert_date_to_text, "25/1/2020")  
+        self.assertRaises(ValueError, convert_date_to_text, "19/08/20") 
+        self.assertRaises(ValueError, convert_date_to_text, "5/09/2020")  
 
     months_year = [
         (1, "janeiro"),
