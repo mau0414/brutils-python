@@ -29,6 +29,9 @@ class TestDate(TestCase):
         self.assertEqual(convert_date_to_text("31/12/1999"),"Trinta e um de dezembro de mil novecentos e noventa e nove") # Last day of the year
         self.assertEqual(convert_date_to_text("29/02/2020"),"Vinte e nove de fevereiro de dois mil e vinte") # Leap year
         self.assertEqual(convert_date_to_text("01/03/2025"),"Primeiro de marco de dois mil e vinte e cinco") # First day of the month
+        self.assertEqual(convert_date_to_text("15-08-2025"),"Quinze de agosto de dois mil e vinte e cinco") # First day of the month
+        self.assertEqual(convert_date_to_text("15.08.2025"),"Quinze de agosto de dois mil e vinte e cinco") # First day of the month
+        self.assertEqual(convert_date_to_text("2025-01-22"),"Vinte e dois de janeiro de dois mil e vinte e cinco") # First day of the month
 
     # Nonexistent dates
     def test_nonexistent_dates(self):
@@ -49,14 +52,12 @@ class TestDate(TestCase):
     # Invalid alternative formats
     def test_invalid_formats(self):
         self.assertRaises(ValueError, convert_date_to_text, "Invalid")
-        self.assertRaises(ValueError, convert_date_to_text, "15-08-2025")  
-        self.assertRaises(ValueError, convert_date_to_text, "15.08.2025")  
-        self.assertRaises(ValueError, convert_date_to_text, "2025-01-22")  
-        self.assertRaises(ValueError, convert_date_to_text, "25/1/2020")  
-        self.assertRaises(ValueError, convert_date_to_text, "19/08/20") 
-        self.assertRaises(ValueError, convert_date_to_text, "5/09/2020")  
+        self.assertRaises(ValueError, convert_date_to_text, "19/08/20")
+        self.assertRaises(ValueError, convert_date_to_text, "20200101")
+        self.assertRaises(ValueError, convert_date_to_text, "25/1/2020")
+        self.assertRaises(ValueError, convert_date_to_text, "5/9/2020")
+        self.assertRaises(ValueError, convert_date_to_text, "1/3/2024")
         self.assertRaises(ValueError, convert_date_to_text, "1924/08/20")
-
 
     months_year = [
         (1, "janeiro"),
