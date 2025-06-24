@@ -1,64 +1,64 @@
 import re
 from typing import Union
-
 from num2words import num2words
-
+from datetime import datetime
 from brutils.data.enums.months import MonthsEnum
-
 
 def convert_date_to_text(date: str) -> Union[str, None]:
     """
-    Converts a given date in Brazilian format (dd/mm/yyyy) to its textual representation.
+    Converts a given date in various formats to its textual representation.
 
-    This function takes a date as a string in the format dd/mm/yyyy and converts it
+    This function takes a date as a string in one of the supported formats and converts it
     to a string with the date written out in Brazilian Portuguese, including the full
     month name and the year.
 
     Args:
-        date (str): The date to be converted into text. Expected format: dd/mm/yyyy.
+        date (str): The date to be converted into text. Supported formats:
+                    dd/mm/yyyy, dd.mm.yyyy, dd-mm-yyyy, yyyy-mm-dd.
 
     Returns:
         str or None: A string with the date written out in Brazilian Portuguese,
-        or None if the date is invalid.
+        or None if the date is nonexistent.
 
+    Raises:
+        ValueError: If the input date string does not match any of the supported formats
     """
-    pattern = re.compile(r"\d{2}/\d{2}/\d{4}")
-    if not re.match(pattern, date):
+
+    supported_formats = {
+        r"^\d{2}/\d{2}/\d{4}$": '%d/%m/%Y',  
+        r"^\d{2}\.\d{2}\.\d{4}$": '%d.%m.%Y', 
+        r"^\d{2}-\d{2}-\d{4}$": '%d-%m-%Y', 
+        r"^\d{4}-\d{2}-\d{2}$": '%Y-%m-%d',    
+    }
+
+    matched_strptime_format = None
+
+    for regex_pattern, strptime_format in supported_formats.items():
+        if re.match(regex_pattern, date):
+            matched_strptime_format = strptime_format
+            break
+    
+    if not matched_strptime_format:
         raise ValueError(
-            "Date is not a valid date. Please pass a date in the format dd/mm/yyyy."
+            f"Date '{date}' has an invalid format. Please use one of the supported formats: dd/mm/yyyy, dd.mm.yyyy, dd-mm-yyyy, or YYYY-MM-DD."
         )
 
-    day_str, month_str, year_str = date.split("/")
-    day = int(day_str)
-    month = int(month_str)
-    year = int(year_str)
-
-    if 0 <= day > 31:
+    dateObject = None
+    try: 
+        dateObject = datetime.strptime(date, matched_strptime_format)
+    except ValueError:
         return None
-
-    if not MonthsEnum.is_valid_month(month):
-        return None
-
-    # Leap year.
-    if MonthsEnum(int(month)) is MonthsEnum.FEVEREIRO:
-        if (int(year) % 4 == 0 and int(year) % 100 != 0) or (
-            int(year) % 400 == 0
-        ):
-            if day > 29:
-                return None
-        else:
-            if day > 28:
-                return None
+    
+    day = dateObject.day
+    month = dateObject.month
+    year = dateObject.year
 
     day_string = "Primeiro" if day == 1 else num2words(day, lang="pt")
-    month = MonthsEnum(month)
+    month_string = MonthsEnum(month).month_name
     year_string = num2words(year, lang="pt")
 
     date_string = (
-        day_string.capitalize()
-        + " de "
-        + month.month_name
-        + " de "
-        + year_string
+        f"{day_string.capitalize()} de {month_string} de {year_string}"
     )
+
     return date_string

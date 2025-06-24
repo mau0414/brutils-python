@@ -644,7 +644,7 @@ False
 Converte uma data em sua representação textual.
 
 Argumentos:
- - date (str): Uma string no formato dd/mm/aaaa
+ - date (str): Uma string nos formatos: dd/mm/aaaa, dd-mm-aaaa, aa.mm.aaaa ou aaaa.mm.dd
 
 Retorna:
  - A represetação textual da data ou None caso a data esteja mal formatada ou a data seja inválida.

@@ -460,10 +460,10 @@ Example:
 ## Date
 
 ### convert_date_to_text 
-Convert a brazilian date (dd/mm/yyyy) format in their portuguese textual representation.
+Convert a date in their portuguese textual representation.
 
 Args:
- - date (str): A date in a string format dd/mm/yyyy.
+ - date (str): A date in a string format dd/mm/aaaa, dd-mm-aaaa, aa.mm.aaaa or aaaa.mm.dd
 
 Return:
  - (str) | None: A portuguese textual representation of the date or None case a date is invalid.
