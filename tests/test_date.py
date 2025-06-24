@@ -34,13 +34,14 @@ class TestDate(TestCase):
     def test_nonexistent_dates(self):
         self.assertIsNone(convert_date_to_text("31/04/2025"))  #April has 30 days
         self.assertIsNone(convert_date_to_text("29/02/2025"))  # Non-leap year
-        
+        self.assertIsNone(convert_date_to_text("29/02/2025"))  # Non-leap year
+
     # Invalid day numbers
     def test_invalid_day_numbers(self):
         self.assertIsNone(convert_date_to_text("00/01/2025"))
         self.assertIsNone(convert_date_to_text("32/01/2025"))
    
-    # Invalid month/day numbers
+    # Invalid month numbers
     def test_invalid_month_numbers(self):
         self.assertIsNone(convert_date_to_text("15/00/2025"))
         self.assertIsNone(convert_date_to_text("15/13/2025"))
@@ -54,6 +55,8 @@ class TestDate(TestCase):
         self.assertRaises(ValueError, convert_date_to_text, "25/1/2020")  
         self.assertRaises(ValueError, convert_date_to_text, "19/08/20") 
         self.assertRaises(ValueError, convert_date_to_text, "5/09/2020")  
+        self.assertRaises(ValueError, convert_date_to_text, "1924/08/20")
+
 
     months_year = [
         (1, "janeiro"),
