@@ -45,7 +45,7 @@ class TestDate(TestCase):
         self.assertIsNone(convert_date_to_text("15/00/2025"))
         self.assertIsNone(convert_date_to_text("15/13/2025"))
 
-    # Valid alternative formats
+    # Inalid alternative formats
     def test_invalid_formats(self):
         self.assertRaises(ValueError, convert_date_to_text, "Invalid")
         self.assertRaises(ValueError, convert_date_to_text, "15-08-2025")  
