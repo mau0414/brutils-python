@@ -36,7 +36,7 @@ class TestCEP(TestCase):
         self.assertFalse(is_valid("1"))  # Lower boundary 
         self.assertFalse(is_valid("1234567"))  # Below boundary (7 digits)
         self.assertFalse(is_valid("123456789"))  # Above boundary (9 digits)
-        self.assertFalse(is_valid("1234567890"))  
+        self.assertFalse(is_valid("1234567890"))  # Above boundary (10 digits)
         
         # Invalid characters (when CEP does not contain only digits, returns False)
         self.assertFalse(is_valid("1234-678"))  # Hyphen
