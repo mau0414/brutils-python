@@ -66,6 +66,7 @@ False
   - [remove\_symbols\_phone](#remove_symbols_phone)
   - [remove\_international\_dialing\_code](#remove_international_dialing_code)
   - [generate\_phone](#generate_phone)
+  - [identify_ddd](#identify_ddd)
 - [Email](#email)
   - [is\_valid\_email](#is_valid_email)
 - [License Plate](#license-plate)
@@ -626,6 +627,45 @@ Example:
 "1899115895"
 >>> generate_phone("landline")
 "5535317900"
+```
+
+### identify_ddd
+
+Identifies the area code (DDD) of a Brazilian phone number and returns the corresponding state and, if applicable, the metropolitan region.
+
+Args:
+
+- phone_number (str): The phone number to extract the DDD from.
+It may include the country code, symbols (e.g., +, -, or spaces), or be just the two-digit DDD.
+
+Returns:
+
+- "state" (str): The name of the Brazilian state.
+
+- "region" (str, optional): The region within the state, if applicable.
+
+OR
+
+- "error" (str, optional): An error message if the DDD is invalid.
+
+Example:
+
+```python
+>>> from brutils import identify_ddd
+>>> identify_ddd('11')
+{'state': 'São Paulo', 'region': 'Região Metropolitana de São Paulo'}
+>>> identify_ddd('65999999999')
+{'state': 'Mato Grosso', 'region': 'Norte de Mato Grosso'}
+>>> identify_ddd('82')
+{'state': 'Alagoas'}
+>>> identify_ddd('00')
+{'error': 'DDD 0 inválido.'}
+>>> identify_ddd('29999999999')
+{'error': 'DDD 29 inválido.'}
+>>> identify_ddd('5588997889955')
+{'state': 'Ceará', 'region': 'Sul do Ceará'}
+>>> identify_ddd('+5588996443006')
+{'state': 'Ceará', 'region': 'Sul do Ceará'}
 ```
 
 ## Email

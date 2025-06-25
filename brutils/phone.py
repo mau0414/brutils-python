@@ -1,6 +1,9 @@
 import re
 from random import choice, randint
 
+from brutils.data.ddd_to_regions import DDD_TO_REGION
+from brutils.data.ddd_to_uf import DDD_TO_UF, UFS_WITH_SINGLE_DDD
+
 
 # FORMATTING
 ############
@@ -139,6 +142,86 @@ def remove_international_dialing_code(phone_number):  # type: (str) -> str
         return phone_number.replace("55", "", 1)
     else:
         return phone_number
+
+
+def identify_ddd(phone_number: str):
+    """
+    Identifies the area code of a Brazilian telephone number and returns the state
+    and, if applicable, the corresponding metropolitan region.
+
+    Args:
+    phone_number (str): The telephone number to identify the area code from.
+                        It can include the country code, may contain symbols (such as +, -, or spaces),
+                        or be just the two-digit area code (DDD).
+
+    Returns:
+    dict: Containing 'state' and optionally 'region', or error.
+
+    Example:
+        >>> identify_ddd('11')
+        {'state': 'São Paulo', 'region': 'Região Metropolitana de São Paulo'}
+        >>> identify_ddd('65999999999')
+        {'state': 'Mato Grosso', 'region': 'Norte de Mato Grosso'}
+        >>> identify_ddd('82')
+        {'state': 'Alagoas'}
+        >>> identify_ddd('00')
+        {'error': 'DDD 0 inválido.'}
+        >>> identify_ddd('29999999999')
+        {'error': 'DDD 29 inválido.'}
+        >>> identify_ddd('5588997889955')
+        {'state': 'Ceará', 'region': 'Sul do Ceará'}
+        >>> identify_ddd('+5588996443006')
+        {'state': 'Ceará', 'region': 'Sul do Ceará'}
+    """
+
+    phone_number = remove_symbols_phone(phone_number)
+
+    if phone_number.isdigit() and len(phone_number) == 2:
+        ddd = int(phone_number)
+    else:
+        phone_number_clean = remove_international_dialing_code(phone_number)
+        if not is_valid(phone_number_clean):
+            return {"error": "Número de telefone inválido."}
+
+        ddd = int(_extract_ddd_from_phone(phone_number_clean))
+
+    uf = DDD_TO_UF.get(ddd)
+
+    if uf is None:
+        return {
+            "error": f"DDD {ddd} inválido."
+        }
+
+    if uf in UFS_WITH_SINGLE_DDD:
+        return {
+            "state": uf.value
+        }
+
+    region = DDD_TO_REGION.get(ddd)
+
+    return {
+        "state": uf.value,
+        "region": region
+    }
+
+
+def _extract_ddd_from_phone(phone_number: str):  # type: (str) -> (str)
+    """
+    Extracts the DDD (area code) from a Brazilian phone number.
+
+    Removes the international dialing code (if present) and returns the
+    first two digits of the local number, which correspond to the DDD.
+
+    Args:
+        phone_number (str): The phone number, with or without an international dialing code.
+                            It must contain at least two digits after the code is removed.
+
+    Returns:
+        str: The two-digit DDD (area code).
+    """
+
+    cleaned_phone_number = remove_international_dialing_code(phone_number)
+    return cleaned_phone_number[:2]
 
 
 def _is_valid_mobile(phone_number: str):  # type: (str) -> bool
