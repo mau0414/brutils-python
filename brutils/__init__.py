@@ -63,7 +63,7 @@ from brutils.phone import (
 )
 from brutils.phone import generate as generate_phone
 from brutils.phone import is_valid as is_valid_phone
-from brutils.phone import identify_ddd as identify_ddd
+from brutils.phone import identify_ddd
 
 # PIS Imports
 from brutils.pis import format_pis

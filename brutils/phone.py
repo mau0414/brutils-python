@@ -1,7 +1,7 @@
 import re
 from random import choice, randint
 
-from brutils.data.ddd_to_cities import DDD_TO_REGION
+from brutils.data.ddd_to_regions import DDD_TO_REGION
 from brutils.data.ddd_to_uf import DDD_TO_UF, UFS_WITH_SINGLE_DDD
 
 
@@ -179,13 +179,12 @@ def identify_ddd(phone_number: str):
     if phone_number.isdigit() and len(phone_number) == 2:
         ddd = int(phone_number)
     else:
-        if not is_valid(remove_international_dialing_code(phone_number)):
-            return {
-                "error": "Número de telefone inválido."
-            }
-        ddd = int(_extract_ddd_from_phone(phone_number))
+        phone_number_clean = remove_international_dialing_code(phone_number)
+        if not is_valid(phone_number_clean):
+            return {"error": "Número de telefone inválido."}
 
-    ddd = int(_extract_ddd_from_phone(phone_number))
+        ddd = int(_extract_ddd_from_phone(phone_number_clean))
+
     uf = DDD_TO_UF.get(ddd)
 
     if uf is None:
