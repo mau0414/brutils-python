@@ -10,6 +10,12 @@ from brutils.types import Address
 # FORMATTING
 ############
 
+def _is_valid_format(cep): # type: (str) -> bool
+    """
+    (Internal helper) Checks if a CEP string has a valid format (8 digits).
+    """
+    return isinstance(cep, str) and len(cep) == 8 and cep.isdigit()
+
 
 def remove_symbols(dirty):  # type: (str) -> str
     """
@@ -55,42 +61,39 @@ def format_cep(cep):  # type: (str) -> str | None
         None
     """
 
-    return f"{cep[:5]}-{cep[5:8]}" if is_valid(cep) else None
+    return f"{cep[:5]}-{cep[5:8]}" if _is_valid_format(cep) else None
 
 
 # OPERATIONS
 ############
 
 
-def is_valid(cep):  # type: (str) -> bool
+def is_valid(cep, check_existence: bool = False): # type: (str, bool) -> bool
     """
-    Checks if a CEP (Postal Code) is valid.
+    Checks if a Brazilian CEP (Postal Code) is valid.
 
-    To be considered valid, the input must be a string containing exactly 8
-    digits.
-    This function does not verify if the CEP is a real postal code; it only
-    validates the format of the string.
+    By default, this function only validates the CEP's format, checking if the
+    input is a string containing exactly 8 digits.
+
+    When the `check_existence` parameter is set to True, the function performs
+    an additional check to confirm if the CEP corresponds to a real-world address.
 
     Args:
         cep (str): The string containing the CEP to be checked.
+        check_existence (bool): If True, also validates the real-world
+                                existence of the CEP. Defaults to False.
 
     Returns:
-        bool: True if the CEP is valid (8 digits), False otherwise.
-
-    Example:
-        >>> is_valid("12345678")
-        True
-        >>> is_valid("12345")
-        False
-        >>> is_valid("abcdefgh")
-        False
-
-    Source:
-        https://en.wikipedia.org/wiki/Código_de_Endereçamento_Postal
+        bool: True if the CEP is valid, False otherwise.
     """
 
-    return isinstance(cep, str) and len(cep) == 8 and cep.isdigit()
+    if not _is_valid_format(cep):
+        return False
 
+    if not check_existence:
+        return True
+
+    return get_address_from_cep(cep) is not None
 
 def generate():  # type: () -> str
     """
@@ -155,7 +158,7 @@ def get_address_from_cep(cep, raise_exceptions=False):  # type: (str, bool) -> A
     base_api_url = "https://viacep.com.br/ws/{}/json/"
 
     clean_cep = remove_symbols(cep)
-    cep_is_valid = is_valid(clean_cep)
+    cep_is_valid = _is_valid_format(clean_cep) 
 
     if not cep_is_valid:
         if raise_exceptions:

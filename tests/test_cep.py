@@ -50,12 +50,28 @@ class TestCEP(TestCase):
         self.assertTrue(is_valid("12345678"))  
         self.assertTrue(is_valid("18052780"))  # Real CEP
 
+    @patch('brutils.cep.get_address_from_cep')
+    def test_is_valid_with_existence_check(self, mock_get_address):
+        mock_get_address.return_value = {"cep": "18052-780"}
+        self.assertTrue(is_valid("18052780", check_existence=True))
+        mock_get_address.assert_called_once_with("18052780")
+
+        mock_get_address.reset_mock()
+        mock_get_address.return_value = None
+
+        self.assertFalse(is_valid("99999999", check_existence=True))
+        mock_get_address.assert_called_once_with("99999999")
+
+        mock_get_address.reset_mock()
+
+        self.assertFalse(is_valid("12345", check_existence=True))
+        mock_get_address.assert_not_called()
+
     def test_generate(self):
         for _ in range(10_000):
             self.assertIs(is_valid(generate()), True)
 
-
-@patch("brutils.cep.is_valid")
+@patch("brutils.cep._is_valid_format")
 class TestIsValidToFormat(TestCase):
     def test_when_cep_is_valid_returns_True_to_format(self, mock_is_valid):
         mock_is_valid.return_value = True
